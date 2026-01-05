@@ -67,7 +67,36 @@ class _CounterPageState extends State<CounterPage> {
             },
             child: const Text('Reset'),
           ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailPage(count: count),
+                ),
+              );
+            },
+            child: const Text('Go to Detail'),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class DetailPage extends StatelessWidget {
+  final int count;
+  const DetailPage({super.key, required this.count});
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      appBar: AppBar(title: const Text('Detail Page')),
+      body: Center(
+        child: Text(
+          'Count from previous page : $count',
+          style: const TextStyle(fontSize: 24),
+        ),
       ),
     );
   }
