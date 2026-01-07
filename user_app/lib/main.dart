@@ -68,15 +68,32 @@ class _CounterPageState extends State<CounterPage> {
             child: const Text('Reset'),
           ),
           ElevatedButton(
+            onPressed: () async {
+              final shouldReset = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      DetailPage(count: count, isHigh: isHigh),
+                ),
+              );
+              if (shouldReset == true) {
+                setState(() {
+                  count = 0;
+                });
+              }
+            },
+            child: const Text('Go to Detail'),
+          ),
+          ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetailPage(count: count),
+                  builder: (context) => SettingPage(count: count),
                 ),
               );
             },
-            child: const Text('Go to Detail'),
+            child: const Text('SettingPage'),
           ),
         ],
       ),
@@ -86,16 +103,54 @@ class _CounterPageState extends State<CounterPage> {
 
 class DetailPage extends StatelessWidget {
   final int count;
-  const DetailPage({super.key, required this.count});
+  final bool isHigh;
+  const DetailPage({super.key, required this.count, required this.isHigh});
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(title: const Text('Detail Page')),
       body: Center(
-        child: Text(
-          'Count from previous page : $count',
-          style: const TextStyle(fontSize: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              isHigh ? 'Count is High : $count' : 'Count is NORMAL : $count',
+              style: const TextStyle(fontSize: 24),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text('Reset Count'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+              child: const Text('Back'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SettingPage extends StatelessWidget {
+  final int count;
+  const SettingPage({super.key, required this.count});
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      appBar: AppBar(title: Text('Setting Page')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Count is : $count', style: const TextStyle(fontSize: 24)),
+          ],
         ),
       ),
     );
