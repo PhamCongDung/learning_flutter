@@ -24,41 +24,61 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePage extends State<ProfilePage> {
-  String? userName;
-  bool isLoading = true;
+  late Future<String> _userFuture;
   @override
   void initState() {
     super.initState();
     debugPrint('ProfilePage initState');
-    loadData();
+    _userFuture = fetchUserName();
   }
 
-  Future<void> loadData() async {
-    setState(() {
-      isLoading = true;
-    });
-    final name = await fetchUserName();
-    setState(() {
-      userName = name;
-      isLoading = false;
-    });
-  }
+  //  Future<void> loadData() async {
+  //    setState(() {
+  //      isLoading = true;
+  //    });
+  //    final name = await fetchUserName();
+  //    setState(() {
+  //      userName = name;
+  //      isLoading = false;
+  //    });
+  //  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     debugPrint('ProfilePage build');
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('Hello $userName', style: TextStyle(fontSize: 24)),
-          SizedBox(height: 20),
-          ElevatedButton(onPressed: loadData, child: const Text('Reload')),
-        ],
+      child: FutureBuilder<String>(
+        future: _userFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+          if (snapshot.hasData) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Hello ${snapshot.data}',
+                  style: const TextStyle(fontSize: 24),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _userFuture = fetchUserName();
+                    });
+                  },
+                  child: const Text('Reload'),
+                ),
+              ],
+            );
+          }
+          return const SizedBox();
+        },
       ),
     );
   }
