@@ -19,11 +19,13 @@ class _DashBoardPageState extends State<DashBoardPage> {
       _count++;
       _controller.add(_count);
     });
+    setState(() {});
   }
 
   void _stop() {
     _timer?.cancel();
     _timer = null;
+    setState(() {});
   }
 
   @override
@@ -48,6 +50,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
         children: [
           StreamBuilder<int>(
             stream: _controller.stream,
+            initialData: _count,
             builder: (context, snapshot) {
               final value = snapshot.data ?? 0;
               return Text(
@@ -67,7 +70,10 @@ class _DashBoardPageState extends State<DashBoardPage> {
             ],
           ),
           const SizedBox(height: 20),
-          Text(_isRunning ? 'Running' : 'Stopped'),
+          Text(
+            'Status : ${_isRunning ? 'Running' : 'Stopped'}',
+            style: TextStyle(fontSize: 24),
+          ),
         ],
       ),
     );
