@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:userhub/pages/user_list_page.dart';
 
 class DataStream {
   final int count;
@@ -80,6 +81,15 @@ class _DashBoardPageState extends State<DashBoardPage> {
                   const SizedBox(width: 12),
                   ElevatedButton(onPressed: _stop, child: const Text('Stop')),
                 ],
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const UserListPage()),
+                  );
+                },
+                child: const Text('Open User List'),
               ),
               //          const SizedBox(height: 20),
               //          Text(
