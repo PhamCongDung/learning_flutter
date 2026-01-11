@@ -20,12 +20,22 @@ class UserDetailPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Age : ${user.age}', style: const TextStyle(fontSize: 18)),
             const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Back'),
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Back'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Delete'),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

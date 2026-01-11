@@ -11,10 +11,24 @@ class UserListPage extends StatefulWidget {
 
 class _UserListPageState extends State<UserListPage> {
   late Future<List<User>> _futureUsers;
+  List<User> _user = [];
+  bool _loaded = false;
   @override
   void initState() {
     super.initState();
     _futureUsers = fetchUser();
+  }
+
+  Future<void> _openDetail(User user) async {
+    final deleted = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => UserDetailPage(user: user)),
+    );
+    if (deleted == true) {
+      setState(() {
+        _user.removeWhere((u) => u.id == user.id);
+      });
+    }
   }
 
   @override
@@ -31,22 +45,19 @@ class _UserListPageState extends State<UserListPage> {
           if (snapshot.hasError) {
             return const Center(child: Text('Error loading users'));
           }
-          final users = snapshot.data!;
+          final data = snapshot.data!;
+          if (!_loaded) {
+            _user = List<User>.from(data);
+            _loaded = true;
+          }
           return ListView.builder(
-            itemCount: users.length,
+            itemCount: _user.length,
             itemBuilder: (context, index) {
-              final user = users[index];
+              final user = _user[index];
               return ListTile(
                 title: Text(user.name),
                 subtitle: Text('Age : ${user.age}'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => UserDetailPage(user: user),
-                    ),
-                  );
-                },
+                onTap: () => _openDetail(user),
               );
             },
           );

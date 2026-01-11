@@ -1,13 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:userhub/pages/user_list_page.dart';
-
-class DataStream {
-  final int count;
-  final bool isRunning;
-  const DataStream({required this.count, required this.isRunning});
-}
+import 'package:userhub/pages/dashboard_controller.dart';
 
 class DashBoardPage extends StatefulWidget {
   const DashBoardPage({super.key});
@@ -16,39 +9,16 @@ class DashBoardPage extends StatefulWidget {
 }
 
 class _DashBoardPageState extends State<DashBoardPage> {
-  final StreamController<DataStream> _controller =
-      StreamController<DataStream>();
-  Timer? _timer;
-  int _count = 0;
-  bool get _isRunning => _timer?.isActive == true;
-  void _emit() {
-    _controller.add(DataStream(count: _count, isRunning: _isRunning));
-  }
-
-  void _start() {
-    if (_isRunning) return;
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _count++;
-      _emit();
-    });
-  }
-
-  void _stop() {
-    _timer?.cancel();
-    _timer = null;
-    _emit();
-  }
-
+  late final DashboardController controller;
   @override
   void initState() {
     super.initState();
-    _emit();
+    controller = DashboardController();
   }
 
   @override
   void dispose() {
-    _stop();
-    _controller.close();
+    controller.dispose();
     super.dispose();
   }
 
@@ -56,9 +26,9 @@ class _DashBoardPageState extends State<DashBoardPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Center(
-      child: StreamBuilder<DataStream>(
-        stream: _controller.stream,
-        initialData: DataStream(count: _count, isRunning: _isRunning),
+      child: StreamBuilder<DashboardState>(
+        stream: controller.stream,
+        initialData: controller.current,
         builder: (context, snapshot) {
           final state = snapshot.data!;
           return Column(
@@ -77,9 +47,15 @@ class _DashBoardPageState extends State<DashBoardPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(onPressed: _start, child: const Text('Start')),
+                  ElevatedButton(
+                    onPressed: controller.start,
+                    child: const Text('Start'),
+                  ),
                   const SizedBox(width: 12),
-                  ElevatedButton(onPressed: _stop, child: const Text('Stop')),
+                  ElevatedButton(
+                    onPressed: controller.stop,
+                    child: const Text('Stop'),
+                  ),
                 ],
               ),
               ElevatedButton(
