@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:userhub/models/user.dart';
 import 'package:userhub/data/fake_api.dart';
+import 'package:userhub/pages/add_user_page.dart';
 import 'package:userhub/pages/user_detail_page.dart';
 
 class UserListPage extends StatefulWidget {
@@ -31,11 +32,28 @@ class _UserListPageState extends State<UserListPage> {
     }
   }
 
+  Future<void> _openAddUser() async {
+    final newUser = await Navigator.push<User>(
+      context,
+      MaterialPageRoute(builder: (_) => const AddUserPage()),
+    );
+    if (newUser != null) {
+      setState(() {
+        _user.add(newUser);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      appBar: AppBar(title: const Text('Users')),
+      appBar: AppBar(
+        title: const Text('Users'),
+        actions: [
+          IconButton(icon: const Icon(Icons.add), onPressed: _openAddUser),
+        ],
+      ),
       body: FutureBuilder(
         future: _futureUsers,
         builder: (context, snapshot) {
