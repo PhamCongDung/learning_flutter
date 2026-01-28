@@ -3,6 +3,7 @@ import 'package:userhub/models/user.dart';
 import 'package:userhub/data/fake_api.dart';
 import 'package:userhub/pages/add_user_page.dart';
 import 'package:userhub/pages/user_detail_page.dart';
+import 'package:userhub/pages/user_form_page.dart';
 
 class UserListPage extends StatefulWidget {
   const UserListPage({super.key});
@@ -35,11 +36,25 @@ class _UserListPageState extends State<UserListPage> {
   Future<void> _openAddUser() async {
     final newUser = await Navigator.push<User>(
       context,
-      MaterialPageRoute(builder: (_) => const AddUserPage()),
+      // MaterialPageRoute(builder: (_) => const AddUserPage()),
+      MaterialPageRoute(builder: (_) => const UserFormPage()),
     );
     if (newUser != null) {
       setState(() {
         _user.add(newUser);
+      });
+    }
+  }
+
+  Future<void> _openEdit(User user) async {
+    final updatedUser = await Navigator.push<User>(
+      context,
+      MaterialPageRoute(builder: (_) => UserFormPage(initialUser: user)),
+    );
+    if (updatedUser != null) {
+      setState(() {
+        final index = _user.indexWhere((u) => u.id == updatedUser.id);
+        if (index != -1) _user[index] = updatedUser;
       });
     }
   }
@@ -54,7 +69,7 @@ class _UserListPageState extends State<UserListPage> {
           IconButton(icon: const Icon(Icons.add), onPressed: _openAddUser),
         ],
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<List<User>>(
         future: _futureUsers,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -76,6 +91,7 @@ class _UserListPageState extends State<UserListPage> {
                 title: Text(user.name),
                 subtitle: Text('Age : ${user.age}'),
                 onTap: () => _openDetail(user),
+                onLongPress: () => _openEdit(user),
               );
             },
           );
